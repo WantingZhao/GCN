@@ -27,20 +27,24 @@ def load_data(dataset_str):
     dataset_str='data/ind.'+dataset_str
     #[[], ['PA'], ['PA', 'PA'], ['PA', 'PC'], ['PA', 'PT'], ['PC'], ['PC', 'PC'], ['PC', 'PT'], ['PT'], ['PT', 'PT'], ['PA', 'PA', 'PA', 'PA'], ['PA', 'PC', 'PC', 'PA'], ['PA', 'PT', 'PT', 'PA'], ['PC', 'PC', 'PC', 'PC'], ['PC', 'PT', 'PT', 'PC'], ['PT', 'PT', 'PT', 'PT']]
 
-    num_nodes, edge_sets, metapaths, train_idx, valid_idx, test_idx, adj_indices, adj_values, allx, ally = common_load_data(dataset_str)
+    num_nodes, edge_sets, metapaths,metapaths_name, train_idx, valid_idx, test_idx, adj_indices, adj_values, allx, ally = common_load_data(dataset_str)
     print(metapaths)
-    metapath = metapaths[11]
-    adj =scipy.sparse.eye(num_nodes)
-    for type in metapath:
-        edges =adj_indices[type]
-        values = adj_values[type]
-        row = [pair[0] for pair in edges]
-        col = [pair[1] for pair in edges]
-        data = [0.000001 for value in values]
-        adj1 = scipy.sparse.csr_matrix((data, (row, col)), shape=(num_nodes, num_nodes))
-        adj = adj*adj1
-        adj = adj.ceil()
+    adjs =[]
+    for metapath in metapaths:
+        metapath = metapaths[11]
+        adj = scipy.sparse.eye(num_nodes)
+        for type in metapath:
+            edges = adj_indices[type]
+            values = adj_values[type]
+            row = [pair[0] for pair in edges]
+            col = [pair[1] for pair in edges]
+            data = [0.000001 for value in values]
+            adj1 = scipy.sparse.csr_matrix((data, (row, col)), shape=(num_nodes, num_nodes))
+            adj = adj * adj1
+            adj = adj.ceil()
+        adjs.append(adj)
     print('adj---------------', adj)
+
 
     train_mask =  np.zeros((num_nodes), dtype=np.bool)
     y_train = np.zeros((num_nodes,ally.shape[1]), dtype=np.float)
@@ -61,7 +65,8 @@ def load_data(dataset_str):
         y_test[node] = ally[node]
 
 
-    return adj, allx, y_train, y_valid, y_test, train_mask, valid_mask, test_mask
+
+    return metapaths,metapaths_name, adjs, allx, y_train, y_valid, y_test, train_mask, valid_mask, test_mask
 
 # def load_data(dataset_str):
 #     """
@@ -159,6 +164,7 @@ def sparse_to_tuple(sparse_mx):
 
 def preprocess_features(features):
     """Row-normalize feature matrix and convert to tuple representation"""
+    print('features',features)
     rowsum = np.array(features.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
