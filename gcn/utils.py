@@ -31,7 +31,6 @@ def load_data(dataset_str):
     print(metapaths)
     adjs =[]
     for metapath in metapaths:
-        metapath = metapaths[11]
         adj = scipy.sparse.eye(num_nodes)
         for type in metapath:
             edges = adj_indices[type]
