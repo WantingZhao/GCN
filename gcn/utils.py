@@ -24,7 +24,7 @@ def sample_mask(idx, l):
     return np.array(mask, dtype=np.bool)
 
 def load_data(dataset_str):
-    dataset_str='data/ind.'+dataset_str
+    dataset_str='../../my_mixhop/data/ind.'+dataset_str
     #[[], ['PA'], ['PA', 'PA'], ['PA', 'PC'], ['PA', 'PT'], ['PC'], ['PC', 'PC'], ['PC', 'PT'], ['PT'], ['PT', 'PT'], ['PA', 'PA', 'PA', 'PA'], ['PA', 'PC', 'PC', 'PA'], ['PA', 'PT', 'PT', 'PA'], ['PC', 'PC', 'PC', 'PC'], ['PC', 'PT', 'PT', 'PC'], ['PT', 'PT', 'PT', 'PT']]
 
     num_nodes, edge_sets, metapaths,metapaths_name, train_idx, valid_idx, test_idx, adj_indices, adj_values, allx, ally = common_load_data(dataset_str)
