@@ -23,11 +23,11 @@ def sample_mask(idx, l):
     mask[idx] = 1
     return np.array(mask, dtype=np.bool)
 
-def load_data(dataset_str):
+def load_data(dataset_str,training_per_class):
     dataset_str='../../my_mixhop/data/ind.'+dataset_str
     #[[], ['PA'], ['PA', 'PA'], ['PA', 'PC'], ['PA', 'PT'], ['PC'], ['PC', 'PC'], ['PC', 'PT'], ['PT'], ['PT', 'PT'], ['PA', 'PA', 'PA', 'PA'], ['PA', 'PC', 'PC', 'PA'], ['PA', 'PT', 'PT', 'PA'], ['PC', 'PC', 'PC', 'PC'], ['PC', 'PT', 'PT', 'PC'], ['PT', 'PT', 'PT', 'PT']]
 
-    num_nodes, edge_sets, metapaths,metapaths_name, train_idx, valid_idx, test_idx, adj_indices, adj_values, allx, ally = common_load_data(dataset_str)
+    num_nodes, edge_sets, metapaths,metapaths_name, train_idx, valid_idx, test_idx, adj_indices, adj_values, allx, ally = common_load_data(dataset_str,training_per_class=training_per_class,max_len=2)
     print(metapaths)
     adjs =[]
     for metapath in metapaths:
@@ -165,6 +165,10 @@ def preprocess_features(features):
     """Row-normalize feature matrix and convert to tuple representation"""
     print('features',features)
     rowsum = np.array(features.sum(1))
+    for i in range(len(rowsum)):
+        for j in range(len(rowsum[0])):
+            if rowsum[i][j]==0:
+                rowsum[i][j]=0.00001
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
     r_mat_inv = sp.diags(r_inv)

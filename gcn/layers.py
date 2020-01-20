@@ -185,4 +185,6 @@ class GraphConvolution(Layer):
         if self.bias:
             output += self.vars['bias']
 
+        h_pool_flat = tf.reshape(self.act(output), [-1, output.shape[1]], name='full')
+        print(h_pool_flat)
         return self.act(output)
